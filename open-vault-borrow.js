@@ -21,8 +21,11 @@ async function mainCall(){
   let accounts = await getAcct();
   console.log(accounts[0]);
   await setinstance(accounts[0]['id']);
+  console.log("opening vault....")
   await openVault();
+  console.log("borrowing DAI....")
   await borrowDAI();
+  console.log("giving approval to the bot....")
   await giveApproval(botaddress);
   
 }
