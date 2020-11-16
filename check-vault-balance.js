@@ -41,8 +41,8 @@ async function mainCall(){
 
   if (approvals.includes(botaddress)) {
     console.log("Approval Confirmed");
-    //await refinance();
-    console.log('READY');  
+    await refinance();
+    //console.log('Refinance Complete');  
   }
 }
 
@@ -86,50 +86,51 @@ async function getApproval(){
 
 // this function refinances a maker vault to compound
 async function refinance() {
-  let spells = dsa.Spell();
-  let borrowAmount = dsa.tokens.fromDecimal(200, "dai"); // 200000 DAI
-  let dai_address = dsa.tokens.info.dai.address
-  let eth_address = dsa.tokens.info.eth.address
-  let vault_id = 0;
-  
-  spells.add({
-    connector: "instapool",
-    method: "flashBorrow",
-    args: [dai_address, borrowAmount, 0, 0]
-  });
-  
-  spells.add({
-    connector: "maker",
-    method: "payback",
-    args: [vault_id, 200, 0, 0] // max payback and setting the payback amount with id 534
-  });
-  
-  spells.add({
-    connector: "maker",
-    method: "withdraw",
-    args: [vault_id, 200, 0, 0] // max withdraw and setting the withdrawn amount with id 987
-  });
-  
-  spells.add({
-    connector: "compound",
-    method: "deposit",
-    args: [eth_address, 0, 0, 0] // get deposit amount with id 987
-  });
-  
-  spells.add({
-    connector: "compound",
-    method: "borrow",
-    args: [dai_address, 0, 0, 0] // get borrow amount with id 534
-  });
-  
-  spells.add({
-    connector: "instapool",
-    method: "flashPayback",
-    args: [dai_address, 0, 0]
-  });
+let borrowAmount = dsa.tokens.fromDecimal(2000, "dai"); // 200000 DAI
+let dai_address = dsa.tokens.info.dai.address
+let eth_address = dsa.tokens.info.eth.address
+let vault_id = 0; // User's Vault ID
+
+let spells = dsa.Spell();
+
+spells.add({
+  connector: "instapool",
+  method: "flashBorrow",
+  args: [dai_address, borrowAmount, 0, 0]
+});
+
+spells.add({
+  connector: "maker",
+  method: "payback",
+  args: [vault_id, dsa.maxValue, 0, "534"] // max payback and setting the payback amount with id 534
+});
+
+spells.add({
+  connector: "maker",
+  method: "withdraw",
+  args: [vault_id, dsa.maxValue, 0, "987"] // max withdraw and setting the withdrawn amount with id 987
+});
+
+spells.add({
+  connector: "compound",
+  method: "deposit",
+  args: [eth_address, 0, "987", 0] // get deposit amount with id 987
+});
+
+spells.add({
+  connector: "compound",
+  method: "borrow",
+  args: [dai_address, 0, "534", 0] // get borrow amount with id 534
+});
+
+spells.add({
+  connector: "instapool",
+  method: "flashPayback",
+  args: [dai_address, 0, 0]
+});
 
 // casting spells
-   await dsa.cast({spells:spells, gasPrice: 66000000000}).catch(e => {
+   await dsa.cast({spells:spells, gas:2000000,  gasPrice: 66000000000}).catch(e => {
       console.log('The cast failed')
       throw e
    })
