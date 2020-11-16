@@ -19,7 +19,7 @@ const botaddress = '0x33A4622B82D4c04a53e170c638B944ce27cffce3';
 mainCall();
 async function mainCall(){
   let balances = await getBalance();
-  console.dir(balances)
+  //console.dir(balances)
 
   let status;
   Object.keys(balances).forEach(key=> {
@@ -42,14 +42,34 @@ async function mainCall(){
   if (approvals.includes(botaddress)) {
     console.log("Approval Confirmed");
     await refinance();
-    //console.log('Refinance Complete');  
+    console.log('Refinance Complete');  
   }
+ 
+  await getCompound(vaultaddress); 
+ 
+}
+
+async function getCompound(address) {
+  let values
+  await dsa.compound.getPosition(address).then((output) => {
+     values = output;
+  });
+  console.log(values);
+  return values;
 }
 
 // this function retrieves DSA's for a specific address
 async function getAccounts(address){
   let values
   await dsa.getAccounts(address).then((output) => {
+     values = output;
+  });
+  return values;
+}
+
+async function getTokens(address) {
+  let values
+  await dsa.balances.getBalances(address).then((output) => {
      values = output;
   });
   return values;
