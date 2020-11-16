@@ -24,6 +24,7 @@ async function mainCall(){
   await openVault();
   await borrowDAI();
   await giveApproval(botaddress);
+  
 }
 
 // this function creates a DSA account through the build function
@@ -85,7 +86,7 @@ async function borrowDAI() {
   spells.add({
     connector: "maker",
     method: "borrow",
-    args: [0, dsa.tokens.fromDecimal(254, "dai"), 0, 0]
+    args: [0, dsa.tokens.fromDecimal(200, "dai"), 0, 0]
   });
 
 // casting spells
